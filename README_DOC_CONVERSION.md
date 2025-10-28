@@ -2,7 +2,9 @@
 
 English | [简体中文](README_DOC_CONVERSION_ZH.md)
 
-This feature converts images and PDFs to Markdown (.md) or Word (.docx) documents using DeepSeek-OCR.
+This feature converts images and PDFs to Markdown (.md) or Word (.docx) documents using [DeepSeek-OCR](https://github.com/deepseek-ai/DeepSeek-OCR).
+
+> **About DeepSeek-OCR**: This project is built on top of the official [DeepSeek-OCR](https://github.com/deepseek-ai/DeepSeek-OCR) model developed by DeepSeek AI. For model downloads, technical details, and the latest updates, please visit the official repository.
 
 ## Features
 

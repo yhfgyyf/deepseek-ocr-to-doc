@@ -6,7 +6,9 @@
 
 ## English
 
-A powerful document conversion tool that converts images and PDFs to Markdown or Word documents using DeepSeek-OCR model.
+A powerful document conversion tool that converts images and PDFs to Markdown or Word documents using [DeepSeek-OCR](https://github.com/deepseek-ai/DeepSeek-OCR) model.
+
+> **Note**: This project is based on the official [DeepSeek-OCR](https://github.com/deepseek-ai/DeepSeek-OCR) model. Please refer to the official repository for model downloads and detailed information.
 
 ### Features
 
@@ -88,7 +90,9 @@ This project follows the DeepSeek-OCR license terms.
 
 ## Chinese
 
-一个强大的文档转换工具，使用 DeepSeek-OCR 模型将图片和 PDF 转换为 Markdown 或 Word 文档。
+一个强大的文档转换工具，使用 [DeepSeek-OCR](https://github.com/deepseek-ai/DeepSeek-OCR) 模型将图片和 PDF 转换为 Markdown 或 Word 文档。
+
+> **说明**: 本项目基于官方 [DeepSeek-OCR](https://github.com/deepseek-ai/DeepSeek-OCR) 模型。模型下载和详细信息请参考官方仓库。
 
 ### 功能特性
 

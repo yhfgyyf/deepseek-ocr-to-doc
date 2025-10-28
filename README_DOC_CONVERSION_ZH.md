@@ -1,6 +1,8 @@
 # 文档转换功能使用指南
 
-基于 DeepSeek-OCR 的图片和 PDF 转 Markdown/Word 文档转换工具。
+基于 [DeepSeek-OCR](https://github.com/deepseek-ai/DeepSeek-OCR) 的图片和 PDF 转 Markdown/Word 文档转换工具。
+
+> **关于 DeepSeek-OCR**: 本项目基于 DeepSeek AI 开发的官方 [DeepSeek-OCR](https://github.com/deepseek-ai/DeepSeek-OCR) 模型构建。模型下载、技术细节和最新更新请访问官方仓库。
 
 [English](README_DOC_CONVERSION.md) | 简体中文
 
