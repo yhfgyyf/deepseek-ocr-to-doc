@@ -22,7 +22,9 @@
 ### 依赖包
 
 以下依赖包已在 vllm-0.11 环境中安装：
-- vllm >= 0.11.0
+- vllm >= 0.11.0（支持 DeepSeek-OCR）
+  - **重要**: 需要 [PR #27247](https://github.com/vllm-project/vllm/pull/27247) 以原生支持 DeepSeek-OCR
+  - 该 PR 将 `DeepseekOCRForCausalLM` 添加到 vLLM 的支持模型列表中
 - torch
 - Pillow
 - python-docx

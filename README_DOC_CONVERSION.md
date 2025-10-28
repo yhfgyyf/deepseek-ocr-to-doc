@@ -22,7 +22,9 @@ This feature converts images and PDFs to Markdown (.md) or Word (.docx) document
 ### Dependencies
 
 The following packages are required (already installed in vllm-0.11):
-- vllm >= 0.11.0
+- vllm >= 0.11.0 with DeepSeek-OCR support
+  - **Important**: Requires [PR #27247](https://github.com/vllm-project/vllm/pull/27247) for native DeepSeek-OCR support
+  - This PR adds `DeepseekOCRForCausalLM` to vLLM's supported models
 - torch
 - Pillow
 - python-docx

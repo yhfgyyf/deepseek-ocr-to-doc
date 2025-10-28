@@ -39,7 +39,7 @@ python run_doc_conversion.py /path/to/document.pdf -f docx
 - Python 3.9+
 - CUDA-capable GPU
 - DeepSeek-OCR model
-- Conda environment with vllm >= 0.11.0
+- vLLM >= 0.11.0 with DeepSeek-OCR support (requires [PR #27247](https://github.com/vllm-project/vllm/pull/27247))
 
 ### Documentation
 
@@ -121,7 +121,7 @@ python run_doc_conversion.py /path/to/document.pdf -f docx
 - Python 3.9+
 - 支持 CUDA 的 GPU
 - DeepSeek-OCR 模型
-- 安装了 vllm >= 0.11.0 的 Conda 环境
+- vLLM >= 0.11.0（需要支持 DeepSeek-OCR，参考 [PR #27247](https://github.com/vllm-project/vllm/pull/27247)）
 
 ### 文档
 
