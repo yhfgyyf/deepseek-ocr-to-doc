@@ -1,0 +1,26 @@
+# Core Dependencies for DeepSeek-OCR Document Converter
+
+# vLLM with DeepSeek-OCR support
+# IMPORTANT: Requires PR #27247 (https://github.com/vllm-project/vllm/pull/27247)
+# Install from source or wait for official release with DeepSeek-OCR support:
+# git clone https://github.com/vllm-project/vllm.git
+# cd vllm
+# pip install -e .
+vllm>=0.11.0
+
+# PyTorch (CUDA version recommended for GPU acceleration)
+torch>=2.0.0
+
+# Image Processing
+Pillow>=10.0.0
+
+# Document Generation
+python-docx>=1.2.0
+
+# PDF Processing
+PyMuPDF>=1.26.0
+
+# Note: For conda users, it's recommended to use the conda environment:
+# conda create -n vllm-0.11 python=3.11
+# conda activate vllm-0.11
+# pip install -r requirements.txt

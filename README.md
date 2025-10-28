@@ -23,7 +23,10 @@ A powerful document conversion tool that converts images and PDFs to Markdown or
 ### Quick Start
 
 ```bash
-# Install dependencies (in vllm-0.11 conda environment)
+# Install dependencies
+pip install -r requirements.txt
+
+# Or install individually
 pip install python-docx PyMuPDF
 
 # Convert image to Markdown
@@ -107,7 +110,10 @@ This project follows the DeepSeek-OCR license terms.
 ### 快速开始
 
 ```bash
-# 安装依赖（在 vllm-0.11 conda 环境中）
+# 安装依赖
+pip install -r requirements.txt
+
+# 或单独安装
 pip install python-docx PyMuPDF
 
 # 图片转 Markdown

@@ -32,6 +32,19 @@
 - python-docx
 - PyMuPDF (fitz)
 
+### 安装步骤
+
+```bash
+# 克隆仓库
+git clone https://github.com/yhfgyyf/deepseek-ocr-to-doc.git
+cd deepseek-ocr-to-doc
+
+# 安装依赖
+pip install -r requirements.txt
+```
+
+**注意**: 关于支持 DeepSeek-OCR 的 vLLM 安装，请参考 [PR #27247](https://github.com/vllm-project/vllm/pull/27247)。
+
 ## 使用方法
 
 ### 基础用法

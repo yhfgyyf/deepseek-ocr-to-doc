@@ -32,6 +32,19 @@ The following packages are required (already installed in vllm-0.11):
 - python-docx
 - PyMuPDF (fitz)
 
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/yhfgyyf/deepseek-ocr-to-doc.git
+cd deepseek-ocr-to-doc
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+**Note**: For vLLM installation with DeepSeek-OCR support, please refer to [PR #27247](https://github.com/vllm-project/vllm/pull/27247).
+
 ## Usage
 
 ### Basic Usage
