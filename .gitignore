@@ -19,14 +19,23 @@ result*.jpg
 
 # Output directories
 output/
-images/
-images_*/
+/images/
+/images_*/
 
 # Test data (large files)
-test_data/
-*.pdf
-*.docx
-*.doc
+# Keep directory structure but exclude actual test files
+test_data/**/*.pdf
+test_data/**/*.docx
+test_data/**/*.doc
+test_data/**/*.jpg
+test_data/**/*.jpeg
+test_data/**/*.png
+test_data/**/*.bmp
+test_data/**/*.tiff
+test_data/**/*.tif
+# But keep README and .gitkeep files
+!test_data/**/README.md
+!test_data/**/.gitkeep
 
 # Model and data
 *.whl
