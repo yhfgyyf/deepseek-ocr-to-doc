@@ -20,6 +20,13 @@ result*.jpg
 # Output directories
 output/
 images/
+images_*/
+
+# Test data (large files)
+test_data/
+*.pdf
+*.docx
+*.doc
 
 # Model and data
 *.whl

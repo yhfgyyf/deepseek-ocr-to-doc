@@ -14,10 +14,12 @@ A powerful document conversion tool that converts images and PDFs to Markdown or
 
 - 🖼️ **Image to Document**: Convert JPG, PNG, TIFF, BMP images to structured documents
 - 📄 **PDF to Document**: Convert multi-page PDFs to structured documents
+- 📁 **Batch Processing**: Process entire directories of images and PDFs automatically
 - 📝 **Dual Format Output**: Generate both Markdown (.md) and Word (.docx) formats
 - 🎯 **Content Preservation**: Maintains titles, paragraphs, images, tables, and formulas
 - 🧮 **Math Formula Support**: Full support for LaTeX math formulas
 - 📊 **Table Recognition**: Preserves table structure and formatting
+- 🔀 **Smart Organization**: Separate image folders for each file to avoid conflicts
 - 🚀 **High Performance**: Powered by vLLM for efficient inference
 
 ### Quick Start
@@ -26,17 +28,14 @@ A powerful document conversion tool that converts images and PDFs to Markdown or
 # Install dependencies
 pip install -r requirements.txt
 
-# Or install individually
-pip install python-docx PyMuPDF
+# Single file conversion
+python run_doc_conversion.py /path/to/image.jpg                    # To Markdown
+python run_doc_conversion.py /path/to/image.jpg -f docx           # To Word
+python run_doc_conversion.py /path/to/document.pdf -f docx        # PDF to Word
 
-# Convert image to Markdown
-python run_doc_conversion.py /path/to/image.jpg
-
-# Convert image to Word
-python run_doc_conversion.py /path/to/image.jpg -f docx
-
-# Convert PDF to Word
-python run_doc_conversion.py /path/to/document.pdf -f docx
+# Batch processing (NEW!)
+python run_doc_conversion.py /path/to/directory -o ./output       # Convert all files
+python run_doc_conversion.py /path/to/directory -f docx -o ./out  # Batch to Word
 ```
 
 ### Requirements
@@ -101,10 +100,12 @@ This project follows the DeepSeek-OCR license terms.
 
 - 🖼️ **图片转文档**: 支持 JPG、PNG、TIFF、BMP 等格式转换为结构化文档
 - 📄 **PDF 转文档**: 支持多页 PDF 转换为结构化文档
+- 📁 **批量处理**: 自动处理整个目录的图片和 PDF 文件
 - 📝 **双格式输出**: 可生成 Markdown (.md) 和 Word (.docx) 格式
 - 🎯 **内容保留**: 完整保留标题、段落、图片、表格和公式
 - 🧮 **数学公式支持**: 完整支持 LaTeX 数学公式
 - 📊 **表格识别**: 保留表格结构和格式
+- 🔀 **智能组织**: 为每个文件创建独立图片文件夹，避免冲突
 - 🚀 **高性能**: 基于 vLLM 实现高效推理
 
 ### 快速开始
@@ -113,17 +114,14 @@ This project follows the DeepSeek-OCR license terms.
 # 安装依赖
 pip install -r requirements.txt
 
-# 或单独安装
-pip install python-docx PyMuPDF
+# 单文件转换
+python run_doc_conversion.py /path/to/image.jpg                    # 转为 Markdown
+python run_doc_conversion.py /path/to/image.jpg -f docx           # 转为 Word
+python run_doc_conversion.py /path/to/document.pdf -f docx        # PDF 转 Word
 
-# 图片转 Markdown
-python run_doc_conversion.py /path/to/image.jpg
-
-# 图片转 Word
-python run_doc_conversion.py /path/to/image.jpg -f docx
-
-# PDF 转 Word
-python run_doc_conversion.py /path/to/document.pdf -f docx
+# 批量处理（新功能！）
+python run_doc_conversion.py /path/to/directory -o ./output       # 转换所有文件
+python run_doc_conversion.py /path/to/directory -f docx -o ./out  # 批量转为 Word
 ```
 
 ### 环境要求

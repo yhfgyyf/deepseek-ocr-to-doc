@@ -10,9 +10,11 @@ This feature converts images and PDFs to Markdown (.md) or Word (.docx) document
 
 - **Image to Document**: Convert JPG, PNG, TIFF, BMP images to structured documents
 - **PDF to Document**: Convert multi-page PDFs to structured documents
+- **Batch Processing**: Process entire directories of images and PDFs automatically
 - **Output Formats**: Markdown (.md) or Word (.docx)
 - **Content Preservation**: Maintains titles, text, images, tables, and formulas
 - **Math Formula Support**: Supports LaTeX math formulas in markdown format
+- **Smart Organization**: Separate image subdirectories for each file to avoid conflicts
 
 ## Requirements
 
@@ -49,6 +51,8 @@ pip install -r requirements.txt
 
 ### Basic Usage
 
+**Single File Conversion:**
+
 Convert image to Markdown:
 ```bash
 python run_doc_conversion.py /path/to/image.jpg
@@ -64,6 +68,18 @@ Convert PDF to Markdown:
 python run_doc_conversion.py /path/to/document.pdf
 ```
 
+**Batch Processing (Directory):**
+
+Convert all images and PDFs in a directory:
+```bash
+python run_doc_conversion.py /path/to/directory -o /path/to/output
+```
+
+Convert directory to Word documents:
+```bash
+python run_doc_conversion.py /path/to/directory -f docx -o /path/to/output
+```
+
 ### Command Line Options
 
 ```
@@ -72,7 +88,7 @@ usage: run_doc_conversion.py [-h] [-f {md,docx}]
                              input_path
 
 positional arguments:
-  input_path            Path to input image or PDF file
+  input_path            Path to input image, PDF file, or directory containing images/PDFs
 
 options:
   -h, --help            Show this help message and exit
@@ -81,7 +97,7 @@ options:
   -o, --output OUTPUT   Output directory (default: /home/yyf/DeepSeek-OCR/output)
   -m, --model MODEL     Path to DeepSeek-OCR model
   -g, --gpu GPU         GPU device ID (default: 0)
-  -n, --name NAME       Output filename (without extension)
+  -n, --name NAME       Output filename (without extension), only for single file conversion
 ```
 
 ### Examples
@@ -98,12 +114,31 @@ python run_doc_conversion.py report.pdf -f docx -o ./results
 # Outputs: ./results/report.docx
 ```
 
-3. **Use specific GPU**:
+3. **Batch convert directory of files**:
+```bash
+python run_doc_conversion.py /path/to/documents -o ./output
+# Processes all images and PDFs in the directory
+# Creates separate image subdirectories for each file:
+#   output/file1.md
+#   output/images_file1/image_1.jpg
+#   output/file2.md
+#   output/images_file2/image_1.jpg
+```
+
+4. **Batch convert to Word format**:
+```bash
+python run_doc_conversion.py /path/to/documents -f docx -o ./output
+# Converts all files to Word format with separate image folders
+```
+
+5. **Use specific GPU**:
 ```bash
 python run_doc_conversion.py image.jpg -g 1
 ```
 
 ## Output Files
+
+### Single File Conversion
 
 For each conversion, the following files are generated:
 
@@ -116,8 +151,27 @@ For each conversion, the following files are generated:
    - Original OCR output with grounding tags
 
 3. **Images Directory**:
-   - `images/image_*.jpg`
+   - `images/image_*.jpg` (default for single files)
    - Extracted images from the document (if any)
+
+### Batch Processing Output
+
+For directory processing, each file gets its own image subdirectory:
+
+```
+output/
+├── file1.md                    # Converted document
+├── file1_raw.mmd              # Raw OCR output
+├── images_file1/              # Images for file1
+│   ├── image_1.jpg
+│   └── image_2.jpg
+├── file2.docx                 # Converted document
+├── file2_raw.mmd              # Raw OCR output
+└── images_file2/              # Images for file2
+    └── image_1.jpg
+```
+
+This organization prevents image filename conflicts when processing multiple files.
 
 ## Document Structure
 

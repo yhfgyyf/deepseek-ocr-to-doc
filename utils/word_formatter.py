@@ -63,15 +63,17 @@ class HTMLTableParser(HTMLParser):
 class WordFormatter:
     """Format OCR results as Word document with proper styling."""
 
-    def __init__(self, output_dir: str):
+    def __init__(self, output_dir: str, image_dir: str = "images"):
         """
         Initialize Word formatter.
 
         Args:
             output_dir: Directory to save Word documents and images
+            image_dir: Directory name for images (relative to output_dir)
         """
         self.output_dir = output_dir
-        self.images_dir = os.path.join(output_dir, "images")
+        self.image_dir = image_dir
+        self.images_dir = os.path.join(output_dir, image_dir)
         os.makedirs(self.images_dir, exist_ok=True)
 
         self.doc = Document()

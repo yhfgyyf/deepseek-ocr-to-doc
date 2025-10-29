@@ -10,9 +10,11 @@
 
 - **图片转文档**: 支持将 JPG、PNG、TIFF、BMP 等格式的图片转换为结构化文档
 - **PDF 转文档**: 支持多页 PDF 转换为结构化文档
+- **批量处理**: 自动处理整个目录的图片和 PDF 文件
 - **输出格式**: 支持 Markdown (.md) 和 Word (.docx) 两种格式
 - **内容保留**: 完整保留标题、正文、图片、表格和公式
 - **数学公式支持**: 支持 LaTeX 格式的数学公式（Markdown 格式）
+- **智能组织**: 为每个文件创建独立图片子目录，避免文件名冲突
 
 ## 环境要求
 
@@ -49,6 +51,8 @@ pip install -r requirements.txt
 
 ### 基础用法
 
+**单文件转换：**
+
 图片转 Markdown：
 ```bash
 python run_doc_conversion.py /path/to/image.jpg
@@ -64,6 +68,18 @@ PDF 转 Markdown：
 python run_doc_conversion.py /path/to/document.pdf
 ```
 
+**批量处理（目录）：**
+
+转换目录中的所有图片和 PDF：
+```bash
+python run_doc_conversion.py /path/to/directory -o /path/to/output
+```
+
+批量转换为 Word 文档：
+```bash
+python run_doc_conversion.py /path/to/directory -f docx -o /path/to/output
+```
+
 ### 命令行参数
 
 ```
@@ -72,7 +88,7 @@ python run_doc_conversion.py /path/to/document.pdf
                              input_path
 
 位置参数:
-  input_path            输入图片或 PDF 文件的路径
+  input_path            输入图片、PDF 文件或包含图片/PDF 的目录路径
 
 选项:
   -h, --help            显示帮助信息并退出
@@ -83,7 +99,7 @@ python run_doc_conversion.py /path/to/document.pdf
   -m MODEL, --model MODEL
                         DeepSeek-OCR 模型路径
   -g GPU, --gpu GPU     GPU 设备 ID，默认为 0
-  -n NAME, --name NAME  输出文件名（不含扩展名）
+  -n NAME, --name NAME  输出文件名（不含扩展名），仅用于单文件转换
 ```
 
 ### 使用示例
@@ -100,12 +116,31 @@ python run_doc_conversion.py report.pdf -f docx -o ./results
 # 输出: ./results/report.docx
 ```
 
-3. **指定 GPU 设备**:
+3. **批量转换目录中的文件**:
+```bash
+python run_doc_conversion.py /path/to/documents -o ./output
+# 处理目录中所有图片和 PDF 文件
+# 为每个文件创建独立的图片子目录:
+#   output/file1.md
+#   output/images_file1/image_1.jpg
+#   output/file2.md
+#   output/images_file2/image_1.jpg
+```
+
+4. **批量转换为 Word 格式**:
+```bash
+python run_doc_conversion.py /path/to/documents -f docx -o ./output
+# 将所有文件转换为 Word 格式，使用独立的图片文件夹
+```
+
+5. **指定 GPU 设备**:
 ```bash
 python run_doc_conversion.py image.jpg -g 1
 ```
 
 ## 输出文件
+
+### 单文件转换
 
 每次转换会生成以下文件：
 
@@ -118,8 +153,27 @@ python run_doc_conversion.py image.jpg -g 1
    - 包含定位标签的原始 OCR 输出
 
 3. **图片目录**:
-   - `images/image_*.jpg`
+   - `images/image_*.jpg`（单文件默认使用）
    - 从文档中提取的图片（如有）
+
+### 批量处理输出
+
+批量处理时，每个文件都有独立的图片子目录：
+
+```
+output/
+├── file1.md                    # 转换后的文档
+├── file1_raw.mmd              # 原始 OCR 输出
+├── images_file1/              # file1 的图片
+│   ├── image_1.jpg
+│   └── image_2.jpg
+├── file2.docx                 # 转换后的文档
+├── file2_raw.mmd              # 原始 OCR 输出
+└── images_file2/              # file2 的图片
+    └── image_1.jpg
+```
+
+这种组织方式可以避免处理多个文件时的图片文件名冲突。
 
 ## 文档结构
 
