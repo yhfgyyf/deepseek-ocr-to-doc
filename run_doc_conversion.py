@@ -11,7 +11,7 @@ import os
 import sys
 import re
 from pathlib import Path
-from typing import Optional, List
+from typing import Optional, List, Dict
 
 import torch
 if torch.version.cuda == '11.8':
@@ -24,7 +24,7 @@ from vllm.engine.arg_utils import AsyncEngineArgs
 from utils.deepseek_parser import DeepSeekOCRParser
 from utils.markdown_formatter import MarkdownFormatter
 from utils.word_formatter import WordFormatter
-from utils.pdf_processor import pdf_to_images, get_pdf_page_count
+from utils.pdf_processor import pdf_to_images, get_pdf_page_count, extract_embedded_images
 from utils.image_processor import load_image
 from config import MODEL_PATH, OUTPUT_PATH
 
@@ -226,8 +226,14 @@ class DocumentConverter:
         print(f"Converting PDF: {pdf_path}")
         print(f"{'='*60}\n")
 
-        # Convert PDF to images
-        print("Converting PDF to images...")
+        # Extract embedded images from PDF first
+        print("Extracting embedded images from PDF...")
+        embedded_images, embedded_bboxes = extract_embedded_images(pdf_path)
+        total_embedded = sum(len(imgs) for imgs in embedded_images.values())
+        print(f"Found {total_embedded} embedded image(s) across {len(embedded_images)} page(s)")
+
+        # Convert PDF to images for OCR
+        print("\nConverting PDF to images for OCR...")
         page_count = get_pdf_page_count(pdf_path)
         print(f"PDF has {page_count} page(s)")
 
@@ -251,6 +257,15 @@ class DocumentConverter:
             # Parse output
             cleaned_markdown, blocks = self.parser.parse(ocr_output)
 
+            # Match embedded images to OCR-detected image blocks for this page
+            page_idx = page_num - 1  # 0-indexed
+            if page_idx in embedded_images:
+                blocks = self._match_embedded_images(
+                    blocks,
+                    embedded_images[page_idx],
+                    embedded_bboxes[page_idx]
+                )
+
             # Add page separator
             if page_num > 1:
                 all_blocks.append({
@@ -258,6 +273,12 @@ class DocumentConverter:
                     "content": f"Page {page_num}",
                     "bbox": []
                 })
+
+            # Store page image with blocks for later formatting
+            for block in blocks:
+                if block.get("type") == "image" and "embedded_image" not in block:
+                    # For non-embedded images, store source page image
+                    block["source_image"] = image
 
             all_blocks.extend(blocks)
             all_markdown.append(cleaned_markdown)
@@ -275,20 +296,106 @@ class DocumentConverter:
         print(f"Formatting as {self.output_format.upper()}...")
 
         if self.output_format == "word":
-            # Use last image as source for any remaining image extractions
-            formatter.format_blocks(all_blocks, source_image=images[-1] if images else None)
+            # Pass None as source_image since we've attached images to blocks
+            formatter.format_blocks(all_blocks, source_image=None)
             output_path = os.path.join(self.output_dir, f"{output_name}.docx")
             formatter.save(output_path)
             print(f"Word document saved to: {output_path}")
         else:
             # Format to Markdown
-            markdown_content = formatter.format_blocks(all_blocks,
-                                                           source_image=images[-1] if images else None)
+            markdown_content = formatter.format_blocks(all_blocks, source_image=None)
             output_path = os.path.join(self.output_dir, f"{output_name}.md")
             formatter.save_markdown(markdown_content, f"{output_name}.md")
             print(f"Markdown document saved to: {output_path}")
 
         return output_path
+
+    @staticmethod
+    def _match_embedded_images(blocks: List[Dict], embedded_images: List[Image.Image],
+                               embedded_bboxes: List[tuple]) -> List[Dict]:
+        """
+        Match embedded PDF images to OCR-detected image blocks by bbox overlap
+
+        Args:
+            blocks: List of content blocks from OCR
+            embedded_images: List of embedded PIL Images from PDF page
+            embedded_bboxes: List of normalized bboxes for embedded images
+
+        Returns:
+            Updated blocks with embedded images attached
+        """
+        # Create a copy to avoid modifying original
+        updated_blocks = blocks.copy()
+
+        # Track which embedded images have been matched
+        used_embedded = [False] * len(embedded_images)
+
+        for block in updated_blocks:
+            if block.get("type") != "image":
+                continue
+
+            ocr_bbox = block.get("bbox")
+            if not ocr_bbox or len(ocr_bbox) != 4:
+                continue
+
+            # Find best matching embedded image by bbox overlap
+            best_match_idx = None
+            best_overlap = 0.0
+
+            for idx, emb_bbox in enumerate(embedded_bboxes):
+                if used_embedded[idx] or emb_bbox is None:
+                    continue
+
+                # Calculate IoU (Intersection over Union)
+                overlap = DocumentConverter._calculate_bbox_iou(ocr_bbox, emb_bbox)
+
+                if overlap > best_overlap:
+                    best_overlap = overlap
+                    best_match_idx = idx
+
+            # If we found a good match (>30% overlap), use embedded image
+            if best_match_idx is not None and best_overlap > 0.3:
+                block["embedded_image"] = embedded_images[best_match_idx]
+                used_embedded[best_match_idx] = True
+                print(f"  Matched embedded image {best_match_idx + 1} to OCR block (overlap: {best_overlap:.2f})")
+
+        return updated_blocks
+
+    @staticmethod
+    def _calculate_bbox_iou(bbox1: tuple, bbox2: tuple) -> float:
+        """
+        Calculate Intersection over Union for two bboxes
+
+        Args:
+            bbox1: (x0, y0, x1, y1) normalized coordinates
+            bbox2: (x0, y0, x1, y1) normalized coordinates
+
+        Returns:
+            IoU score (0 to 1)
+        """
+        x1_min, y1_min, x1_max, y1_max = bbox1
+        x2_min, y2_min, x2_max, y2_max = bbox2
+
+        # Calculate intersection
+        inter_x_min = max(x1_min, x2_min)
+        inter_y_min = max(y1_min, y2_min)
+        inter_x_max = min(x1_max, x2_max)
+        inter_y_max = min(y1_max, y2_max)
+
+        if inter_x_max <= inter_x_min or inter_y_max <= inter_y_min:
+            return 0.0
+
+        inter_area = (inter_x_max - inter_x_min) * (inter_y_max - inter_y_min)
+
+        # Calculate union
+        area1 = (x1_max - x1_min) * (y1_max - y1_min)
+        area2 = (x2_max - x2_min) * (y2_max - y2_min)
+        union_area = area1 + area2 - inter_area
+
+        if union_area == 0:
+            return 0.0
+
+        return inter_area / union_area
 
     @staticmethod
     def _sanitize_filename(filename: str) -> str:

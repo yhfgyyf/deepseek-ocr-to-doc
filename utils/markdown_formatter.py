@@ -148,8 +148,36 @@ class MarkdownFormatter:
         Returns:
             Relative path to saved image, or None if failed
         """
-        if not self.current_image:
-            # No source image, just generate placeholder (won't work but maintains structure)
+        # Check if block has embedded image (from PDF) - use it directly
+        if "embedded_image" in block:
+            try:
+                embedded_img = block["embedded_image"]
+
+                # Convert to RGB if necessary
+                if embedded_img.mode in ('RGBA', 'LA', 'P'):
+                    rgb_image = Image.new('RGB', embedded_img.size, (255, 255, 255))
+                    if embedded_img.mode == 'P':
+                        embedded_img = embedded_img.convert('RGBA')
+                    rgb_image.paste(embedded_img, mask=embedded_img.split()[-1] if embedded_img.mode in ('RGBA', 'LA') else None)
+                    embedded_img = rgb_image
+
+                # Save to file
+                self.image_counter += 1
+                image_filename = f"image_{self.image_counter}.jpg"
+                image_path = os.path.join(self.image_output_dir, image_filename)
+                embedded_img.save(image_path, "JPEG", quality=95)
+
+                return f"{self.image_dir}/{image_filename}"
+
+            except Exception as e:
+                print(f"Warning: Failed to save embedded image {self.image_counter}: {e}")
+                # Fall through to regular processing
+
+        # Determine source image for cropping
+        source_image = block.get("source_image") or self.current_image
+
+        if not source_image:
+            # No source image, just generate placeholder
             self.image_counter += 1
             return f"{self.image_dir}/image_{self.image_counter}.jpg"
 
@@ -159,7 +187,7 @@ class MarkdownFormatter:
 
         try:
             # bbox is normalized [0, 1], convert to pixel coordinates
-            img_width, img_height = self.current_image.size
+            img_width, img_height = source_image.size
             x1 = int(bbox[0] * img_width)
             y1 = int(bbox[1] * img_height)
             x2 = int(bbox[2] * img_width)
@@ -173,7 +201,7 @@ class MarkdownFormatter:
                 return None
 
             # Crop image
-            cropped = self.current_image.crop((x1, y1, x2, y2))
+            cropped = source_image.crop((x1, y1, x2, y2))
 
             # Convert to RGB if necessary (JPEG doesn't support RGBA)
             if cropped.mode in ('RGBA', 'LA', 'P'):

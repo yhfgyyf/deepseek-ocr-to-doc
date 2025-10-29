@@ -402,20 +402,39 @@ class WordFormatter:
 
     def _save_image_from_bbox(self, block: Dict) -> Optional[str]:
         """Extract and save image from bbox coordinates."""
-        if not self.current_image:
-            return None
-
-        bbox = block.get("bbox")
-        if not bbox or len(bbox) != 4:
-            return None
-
         self.image_counter += 1
         image_filename = f"image_{self.image_counter}.jpg"
         image_path = os.path.join(self.images_dir, image_filename)
 
         try:
+            # Check if block has embedded image (from PDF) - use it directly
+            if "embedded_image" in block:
+                embedded_img = block["embedded_image"]
+
+                # Convert to RGB if necessary
+                if embedded_img.mode in ('RGBA', 'LA', 'P'):
+                    rgb_image = Image.new('RGB', embedded_img.size, (255, 255, 255))
+                    if embedded_img.mode == 'P':
+                        embedded_img = embedded_img.convert('RGBA')
+                    rgb_image.paste(embedded_img, mask=embedded_img.split()[-1] if embedded_img.mode in ('RGBA', 'LA') else None)
+                    embedded_img = rgb_image
+
+                # Save to file
+                embedded_img.save(image_path, "JPEG", quality=95)
+                return image_path
+
+            # Determine source image for cropping
+            source_image = block.get("source_image") or self.current_image
+
+            if not source_image:
+                return None
+
+            bbox = block.get("bbox")
+            if not bbox or len(bbox) != 4:
+                return None
+
             # Get image dimensions
-            img_width, img_height = self.current_image.size
+            img_width, img_height = source_image.size
 
             # Convert normalized bbox to pixel coordinates
             x1 = int(bbox[0] * img_width)
@@ -431,7 +450,7 @@ class WordFormatter:
                 return None
 
             # Crop image
-            cropped = self.current_image.crop((x1, y1, x2, y2))
+            cropped = source_image.crop((x1, y1, x2, y2))
 
             # Convert to RGB if necessary (JPEG doesn't support RGBA)
             if cropped.mode in ('RGBA', 'LA', 'P'):
