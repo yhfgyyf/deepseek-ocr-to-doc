@@ -22,20 +22,12 @@ output/
 /images/
 /images_*/
 
-# Test data (large files)
-# Keep directory structure but exclude actual test files
-test_data/**/*.pdf
-test_data/**/*.docx
-test_data/**/*.doc
-test_data/**/*.jpg
-test_data/**/*.jpeg
-test_data/**/*.png
-test_data/**/*.bmp
-test_data/**/*.tiff
-test_data/**/*.tif
-# But keep README and .gitkeep files
+# Test data
+# Track all files in test_data/input and test_data/output
+!test_data/input/**
+!test_data/output/**
+# But keep README files
 !test_data/**/README.md
-!test_data/**/.gitkeep
 
 # Model and data
 *.whl
